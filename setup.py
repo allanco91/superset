@@ -110,6 +110,9 @@ setup(
         "wtforms-json",
         "pyparsing>=2.4.7, <3.0.0",
         "holidays==0.10.3",  # PINNED! https://github.com/dr-prodigy/python-holidays/issues/406
+        "oauthlib==3.1.0",
+        "pyOpenSSL==20.0.1",
+        "requests_oauthlib==1.3.0"
     ],
     extras_require={
         "athena": ["pyathena>=1.10.8,<1.11"],

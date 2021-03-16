@@ -1,0 +1,54 @@
+{% extends "superset/base.html" %}
+{% block head_css %}
+{{ super() }}
+{% set favicons = appbuilder.app.config['FAVICONS'] %}
+{% for favicon in favicons %}
+<link
+  rel="{{favicon.rel if favicon.rel else "icon"}}"
+  type="{{favicon.type if favicon.type else "image/png"}}"
+  {% if favicon.sizes %}sizes={{favicon.sizes}}{% endif %}
+  href="{{favicon.href}}"
+>
+{% endfor %}
+<link rel="stylesheet" type="text/css"
+  href="{{appbuilder.app.config['ATLAS_HOST']}}/cdn/libs/semantic-ui/semantic.purple.css">
+{% endblock %}
+{% block title %}{{appbuilder.app.config['APP_NAME']}}{% endblock %}
+{% block body %}
+
+<div class="ui container" style="margin:auto">
+  <div class="ui placeholder segment">
+    <div class="ui icon header">
+      <i class="lock icon"></i>
+      403 - Você não tem permissão para visualizar essa página
+      {% if username %}
+      <div class="sub header">
+        Logado como {{username}}
+      </div>
+      {% endif %}
+    </div>
+    <div class="inline">
+      <button class="ui labeled icon button" onClick="handleOnClickBack()">
+        <i class="chevron left icon"></i>
+        Voltar
+      </button>
+      <a href="{{appbuilder.get_url_for_index}}" class="ui icon primary button">
+        <i class="home icon"></i>
+        Home
+      </a>
+      <a href="{{appbuilder.get_url_for_logout}}" class="ui right labeled icon button">
+        <i class ="log out icon"></i>
+        Sair
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block tail_js %}
+<script>
+  function handleOnClickBack() {
+    window.history.go(-1);
+  }
+</script>
+{% endblock %}

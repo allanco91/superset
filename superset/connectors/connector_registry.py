@@ -74,6 +74,25 @@ class ConnectorRegistry:
         return datasources
 
     @classmethod
+    def get_all_datasources_by_permissions( # pylint: disable=invalid-name
+        cls,
+        session: Session,
+        permissions: Set[str],
+        schema_perms: Set[str]
+    ) -> List["BaseDatasource"]:
+        datasources: List["BaseDatasource"] = []
+        for source_type in ConnectorRegistry.sources:
+            source_class = ConnectorRegistry.sources[source_type]
+            qry = session.query(source_class).filter(
+                or_(
+                    source_class.perm.in_(permissions),
+                    source_class.schema_perm.in_(schema_perms)
+                )
+            )
+            datasources.extend(qry.all())
+        return datasources
+
+    @classmethod
     def get_datasource_by_name(  # pylint: disable=too-many-arguments
         cls,
         session: Session,

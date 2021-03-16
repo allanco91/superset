@@ -118,6 +118,7 @@ class ChartRestApi(BaseSupersetModelRestApi):
         "params",
         "slice_name",
         "viz_type",
+        "uuid"
     ]
     show_select_columns = show_columns + ["table.id"]
     list_columns = [
@@ -139,6 +140,7 @@ class ChartRestApi(BaseSupersetModelRestApi):
         "description_markeddown",
         "edit_url",
         "id",
+        "uuid",
         "owners.first_name",
         "owners.id",
         "owners.last_name",

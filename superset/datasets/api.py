@@ -92,6 +92,7 @@ class DatasetRestApi(BaseSupersetModelRestApi):
     }
     list_columns = [
         "id",
+        "uuid",
         "database.id",
         "database.database_name",
         "changed_by_name",
@@ -122,6 +123,7 @@ class DatasetRestApi(BaseSupersetModelRestApi):
     ]
     show_columns = [
         "id",
+        "uuid",
         "database.database_name",
         "database.id",
         "table_name",

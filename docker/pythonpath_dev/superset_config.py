@@ -25,6 +25,8 @@ import logging
 import os
 
 from cachelib.file import FileSystemCache
+from security import OIDCSecurityManager
+from flask_appbuilder.security.manager import AUTH_OID
 
 logger = logging.getLogger()
 
@@ -92,3 +94,28 @@ try:
     )
 except ImportError:
     logger.info("Using default Docker config...")
+
+FEATURE_FLAGS = {
+    "DASHBOARD_NATIVE_FILTERS": True,
+    "VERSIONED_EXPORT": True
+}
+
+#
+# Configurações Atlas
+#
+BABEL_DEFAULT_LOCALE = "pt_BR"
+APP_NAME = "Atlas"
+APP_ICON = "https://atlas-devel.itstransdata.com/cdn/images/brand_atlas_white.svg"
+FAVICONS = [{"href": "https://atlas-devel.itstransdata.com/cdn/favicons/favicon-96x96.png"}]
+APP_ICON_WIDTH = 110
+
+AUTH_TYPE = AUTH_OID
+CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
+
+ATLAS_CLIENT_ID = get_env_variable("ATLAS_CLIENT_ID")
+ATLAS_CLIENT_SECRET = get_env_variable("ATLAS_CLIENT_SECRET")
+ATLAS_REDIRECT_URI = get_env_variable("ATLAS_REDIRECT_URI")
+ATLAS_HOST = get_env_variable("ATLAS_HOST")
+ATLAS_AUTH_URI = get_env_variable("ATLAS_AUTH_URI")
+ATLAS_DISCOVERY_URI = get_env_variable("ATLAS_DISCOVERY_URI")
+ATLAS_SCOPES = ["openid", "profile", "atlas-user"]

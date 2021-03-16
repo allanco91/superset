@@ -307,6 +307,9 @@ def menu_data() -> Dict[str, Any]:
             if g.user.is_anonymous
             else f"/superset/profile/{g.user.username}",
             "locale": session.get("locale", "en"),
+            "user_name": g.user.username,
+            "atlas_profile_url": appbuilder.app.config["ATLAS_AUTH_URI"],
+            "atlas_profile_picture": f"{appbuilder.app.config['ATLAS_AUTH_URI']}/picture/{session['sub']}"
         },
     }
 
