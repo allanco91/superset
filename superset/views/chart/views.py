@@ -63,9 +63,16 @@ class SliceModelView(
     @expose("/add", methods=["GET", "POST"])
     @has_access
     def add(self) -> FlaskResponse:
+        sm = self.appbuilder.sm
+        user_perms = sm.user_view_menu_names("datasource_access")
+        schema_perms = sm.user_view_menu_names("schema_access")
+
         datasources = [
             {"value": str(d.id) + "__" + d.type, "label": repr(d)}
-            for d in ConnectorRegistry.get_all_datasources(db.session)
+            for d in ConnectorRegistry.get_all_datasources_by_permissions(
+                session=db.session,
+                permissions=user_perms,
+                schema_perms=schema_perms)
         ]
         payload = {
             "datasources": sorted(datasources, key=lambda d: d["label"]),

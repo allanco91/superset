@@ -300,6 +300,10 @@ yarl==1.6.2
 # via aiohttp
 zipp==3.4.0
 # via importlib-metadata
+#via OIDC custom client atlas
+oauthlib==3.1.0
+pyOpenSSL==20.0.1
+requests_oauthlib==1.3.0
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

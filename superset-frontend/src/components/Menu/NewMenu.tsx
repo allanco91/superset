@@ -23,11 +23,6 @@ import NavDropdown from 'src/components/NavDropdown';
 
 export const dropdownItems = [
   {
-    label: t('SQL query'),
-    url: '/superset/sqllab',
-    icon: 'fa-fw fa-search',
-  },
-  {
     label: t('Chart'),
     url: '/chart/add',
     icon: 'fa-fw fa-bar-chart',
@@ -39,7 +34,7 @@ export const dropdownItems = [
   },
 ];
 const StyledI = styled.div`
-  color: ${({ theme }) => theme.colors.primary.dark1};
+  color: ${({ theme }) => theme.colors.grayscale.light5};
 `;
 
 export default function NewMenu() {

@@ -62,4 +62,65 @@ setupFormatters();
 export const theme = merge(
   supersetTheme,
   bootstrapData?.common?.theme_overrides ?? {},
+  {
+    borderRadius: 5,
+    colors: {
+      primary: {
+        base: "#4D1476",
+        dark1: "#441269",
+        dark2: "#390F57",
+        light1: "#AE62E4",
+        light2: "#C996ED",
+        light3: "#D2A8F0",
+        light4: "#DBB9F3",
+        light5: "#E4CBF6"
+      },
+      secondary: {
+        base: "#B185FF",
+        dark1: "#4B00CC",
+        dark2: "#3C00A3",
+        dark3: "#2D007A",
+        light1: "#BE99FF",
+        light2: "#C29EFF",
+        light3: "#D8C2FF",
+        light4: "#E5D6FF",
+        light5: "#F2EBFF"
+      },
+      error: {
+        base: "#FF0050",
+        dark1: "#B8003A",
+        dark2: "#8F002D",
+        light1: "#FF99B9",
+        light2: "#FFD6E3"
+      },
+      warning: {
+        base: "#FF6E00",
+        dark1: "#E06100",
+        dark2: "#B85000",
+        light1: "#FFBA85",
+        light2: "#FFD1AD",
+      },
+      alert: {
+        base: "#FFFF66",
+        dark1: "#A3A300",
+        dark2: "#7A7A00",
+        light1: "#FFFFAD",
+        light2: "#FFFFD6",
+      },
+      success: {
+        base: "#22E57C",
+        dark1: "#11924D",
+        dark2: "#0D6E3A",
+        light1: "#A3F5C9",
+        light2: "#C8F9DF"
+      },
+      info: {
+        base: "#92ECF7",
+        dark1: "#0DAABF",
+        dark2: "#0B8899",
+        light1: "#B3F1F9",
+        light2: "#C6F4FA"
+      }
+    }
+  }
 );

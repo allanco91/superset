@@ -28,14 +28,15 @@ const NavDropdown = styled(ReactBootstrapNavDropdown)`
     transition: background-color ${({ theme }) => theme.transitionTiming}s;
   }
   &.dropdown.open > a.dropdown-toggle {
-    background: ${({ theme }) => theme.colors.primary.light4};
+    background: ${({ theme }) => theme.colors.primary.base};
   }
 
   :after {
     content: '';
     height: ${({ theme }) => theme.gridUnit * 6}px;
     width: ${({ theme }) => theme.gridUnit * 6}px;
-    background: url('/static/assets/images/icons/triangle_down.svg');
+    mask: url('/static/assets/images/icons/triangle_down.svg');
+    background: ${({ theme }) => theme.colors.grayscale.light5};
     background-size: contain;
     background-position: center center;
     background-repeat: no-repeat;

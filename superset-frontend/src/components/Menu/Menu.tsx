@@ -18,7 +18,7 @@
  */
 import React, { useState } from 'react';
 import { t, styled } from '@superset-ui/core';
-import { Nav, Navbar, NavItem } from 'react-bootstrap';
+import { Nav, Navbar, NavItem, Image, OverlayTrigger, Popover, Button } from 'react-bootstrap';
 import NavDropdown from 'src/components/NavDropdown';
 import { Menu as DropdownMenu } from 'src/common/components';
 import { Link } from 'react-router-dom';
@@ -48,6 +48,9 @@ interface NavBarProps {
   user_login_url: string;
   user_logout_url: string;
   user_profile_url: string | null;
+  user_name?: string;
+  atlas_profile_url?: string;
+  atlas_profile_picture?: string;
   locale: string;
 }
 
@@ -79,7 +82,7 @@ const StyledHeader = styled.header`
       ${({ theme }) => theme.gridUnit * 4}px
       ${({ theme }) => theme.gridUnit * 1.5}px
       ${({ theme }) => theme.gridUnit * 7}px;
-    color: ${({ theme }) => theme.colors.grayscale.base};
+    color: ${({ theme }) => theme.colors.grayscale.light4};
     font-size: ${({ theme }) => theme.typography.sizes.xs}px;
 
     div {
@@ -101,8 +104,24 @@ const StyledHeader = styled.header`
     padding-left: 12px;
   }
 
+  .navbar-inverse .navbar-nav ul {
+    background-color: ${({ theme }) => theme.colors.primary.base};
+  }
+
+  .navbar-inverse .navbar-nav li {
+    background-color: ${({ theme }) => theme.colors.primary.base};
+    transition: background-color ${({ theme }) => theme.transitionTiming}s;
+  
+    div {
+      background-color: ${({ theme }) => theme.colors.primary.dark1};
+      color: ${({ theme }) => theme.colors.grayscale.light5};
+    }
+  }
+
   .navbar-inverse .navbar-nav li a {
-    color: ${({ theme }) => theme.colors.grayscale.dark1};
+    display: block;
+    padding-left: ${({ theme }) => theme.gridUnit * 4}px;
+    color: ${({ theme }) => theme.colors.grayscale.light5};
     border-bottom: none;
     transition: background-color ${({ theme }) => theme.transitionTiming}s;
     &:after {
@@ -144,6 +163,7 @@ const StyledHeader = styled.header`
       padding-bottom: ${({ theme }) => theme.gridUnit}px;
     }
     .ant-menu-item {
+      padding: 0;
       margin-bottom: ${({ theme }) => theme.gridUnit * 2}px;
     }
     .about-section {
@@ -159,9 +179,31 @@ export function Menu({
 }: MenuProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const popover = (
+    <Popover
+      id="popover-positioned-bottom"
+    >
+      <h5>{navbarRight.user_name}</h5>
+      <Button
+        as="a"
+        href={navbarRight.atlas_profile_url}
+        target="_blank"
+      >
+        Meus dados
+      </Button>
+      {" "}
+      <Button
+        as="a"
+        href={navbarRight.user_logout_url}
+      >
+        Sair
+      </Button>
+    </Popover>
+  );
+
   return (
     <StyledHeader className="top" id="main-menu">
-      <Navbar inverse fluid staticTop role="navigation">
+      <Navbar inverse fluid staticTop role="navigation" className="primary">
         <Navbar.Header>
           <Navbar.Brand>
             <a className="navbar-brand" href={brand.path}>
@@ -191,73 +233,86 @@ export function Menu({
         </Nav>
         <Nav className="navbar-right">
           {!navbarRight.user_is_anonymous && <NewMenu />}
-          <NavDropdown
-            id="settings-dropdown"
-            title={t('Settings')}
-            onMouseEnter={() => setDropdownOpen(true)}
-            onMouseLeave={() => setDropdownOpen(false)}
-            onToggle={value => setDropdownOpen(value)}
-            open={dropdownOpen}
+          <OverlayTrigger
+            trigger="click"
+            placement="bottom"
+            overlay={popover}
           >
-            <DropdownMenu>
-              {settings.map((section, index) => [
-                <DropdownMenu.ItemGroup
-                  key={`${section.label}`}
-                  title={section.label}
-                >
-                  {section.childs?.map(child => {
-                    if (typeof child !== 'string') {
-                      return (
-                        <DropdownMenu.Item key={`${child.label}`}>
-                          {isFrontendRoute(child.url) ? (
-                            <Link to={child.url || ''}>{child.label}</Link>
-                          ) : (
-                            <a href={child.url}>{child.label}</a>
-                          )}
-                        </DropdownMenu.Item>
-                      );
-                    }
-                    return null;
-                  })}
-                </DropdownMenu.ItemGroup>,
-                index < settings.length - 1 && <DropdownMenu.Divider />,
-              ])}
+            <Image
+              circle
+              src={navbarRight.atlas_profile_picture}
+              height={35}
+            />
+          </OverlayTrigger>
+          {navbarRight.atlas_profile_picture?.includes("ba073007-1bcc-4a0a-61a9-08d54e24a5ec") &&
+            <NavDropdown
+              id="settings-dropdown"
+              title={t('Settings')}
+              onMouseEnter={() => setDropdownOpen(true)}
+              onMouseLeave={() => setDropdownOpen(false)}
+              onToggle={value => setDropdownOpen(value)}
+              open={dropdownOpen}
+            >
+              <DropdownMenu>
+                {settings.map((section, index) => [
+                  <DropdownMenu.ItemGroup
+                    key={`${section.label}`}
+                    title={section.label}
+                  >
+                    {section.childs?.map(child => {
+                      if (typeof child !== 'string') {
+                        return (
+                          <DropdownMenu.Item key={`${child.label}`}>
+                            {isFrontendRoute(child.url) ? (
+                              <Link to={child.url || ''}>{child.label}</Link>
+                            ) : (
+                              <a href={child.url}>{child.label}</a>
+                            )}
+                          </DropdownMenu.Item>
+                        );
+                      }
+                      return null;
+                    })}
+                  </DropdownMenu.ItemGroup>,
+                  index < settings.length - 1 && <DropdownMenu.Divider />,
+                ])}
 
-              {!navbarRight.user_is_anonymous && [
-                <DropdownMenu.Divider key="user-divider" />,
-                <DropdownMenu.ItemGroup key="user-section" title={t('User')}>
-                  {navbarRight.user_profile_url && (
-                    <DropdownMenu.Item key="profile">
-                      <a href={navbarRight.user_profile_url}>{t('Profile')}</a>
+                {!navbarRight.user_is_anonymous && [
+                  <DropdownMenu.Divider key="user-divider" />,
+                  <DropdownMenu.ItemGroup key="user-section" title={t('User')}>
+                    {navbarRight.user_profile_url && (
+                      <DropdownMenu.Item key="profile">
+                        <a href={navbarRight.user_profile_url}>{t('Profile')}</a>
+                      </DropdownMenu.Item>
+                    )}
+                    <DropdownMenu.Item key="info">
+                      <a href={navbarRight.user_info_url}>{t('Info')}</a>
                     </DropdownMenu.Item>
-                  )}
-                  <DropdownMenu.Item key="info">
-                    <a href={navbarRight.user_info_url}>{t('Info')}</a>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item key="logout">
-                    <a href={navbarRight.user_logout_url}>{t('Logout')}</a>
-                  </DropdownMenu.Item>
-                </DropdownMenu.ItemGroup>,
-              ]}
-              {(navbarRight.version_string || navbarRight.version_sha) && [
-                <DropdownMenu.Divider key="version-info-divider" />,
-                <DropdownMenu.ItemGroup key="about-section" title={t('About')}>
-                  <div className="about-section">
-                    {navbarRight.version_string && (
-                      <li className="version-info">
-                        <span>Version: {navbarRight.version_string}</span>
-                      </li>
-                    )}
-                    {navbarRight.version_sha && (
-                      <li className="version-info">
-                        <span>SHA: {navbarRight.version_sha}</span>
-                      </li>
-                    )}
-                  </div>
-                </DropdownMenu.ItemGroup>,
-              ]}
-            </DropdownMenu>
-          </NavDropdown>
+                    <DropdownMenu.Item key="logout">
+                      <a href={navbarRight.user_logout_url}>{t('Logout')}</a>
+                    </DropdownMenu.Item>
+                  </DropdownMenu.ItemGroup>,
+                ]}
+                {(navbarRight.version_string || navbarRight.version_sha) && [
+                  <DropdownMenu.Divider key="version-info-divider" />,
+                  <DropdownMenu.ItemGroup key="about-section" title={t('About')}>
+                    <div className="about-section">
+                      {navbarRight.version_string && (
+                        <li className="version-info">
+                          <span>Version: {navbarRight.version_string}</span>
+                        </li>
+                      )}
+                      {navbarRight.version_sha && (
+                        <li className="version-info">
+                          <span>SHA: {navbarRight.version_sha}</span>
+                        </li>
+                      )}
+                    </div>
+                  </DropdownMenu.ItemGroup>,
+                ]}
+              </DropdownMenu>
+            </NavDropdown>
+          }
           {navbarRight.documentation_url && (
             <NavItem
               href={navbarRight.documentation_url}
