@@ -668,7 +668,7 @@ class DatasetRestApi(BaseSupersetModelRestApi):
                       description: JSON map of passwords for each file
                       type: string
                     overwrite:
-                      description: overwrite existing databases?
+                      description: overwrite existing datasets?
                       type: bool
           responses:
             200:
