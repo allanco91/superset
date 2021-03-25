@@ -285,6 +285,9 @@ class DatabasePutSchema(Schema):
         allow_none=True,
         validate=[Length(0, 1024), sqlalchemy_uri_validator],
     )
+    uuid = fields.UUID(
+        allow_none=True
+    )
 
 
 class DatabaseTestConnectionSchema(Schema):
