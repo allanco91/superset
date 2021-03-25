@@ -93,6 +93,7 @@ class DatabaseRestApi(BaseSupersetModelRestApi):
     base_filters = [["id", DatabaseFilter, lambda: []]]
     show_columns = [
         "id",
+        "uuid",
         "database_name",
         "cache_timeout",
         "expose_in_sqllab",
@@ -129,6 +130,8 @@ class DatabaseRestApi(BaseSupersetModelRestApi):
         "expose_in_sqllab",
         "force_ctas_schema",
         "id",
+        "uuid",
+        "sqlalchemy_uri"
     ]
     add_columns = [
         "database_name",
@@ -234,7 +237,7 @@ class DatabaseRestApi(BaseSupersetModelRestApi):
             new_model = CreateDatabaseCommand(g.user, item).run()
             # Return censored version for sqlalchemy URI
             item["sqlalchemy_uri"] = new_model.sqlalchemy_uri
-            return self.response(201, id=new_model.id, result=item)
+            return self.response(201, id=new_model.id, uuid=new_model.uuid, result=item)
         except DatabaseInvalidError as ex:
             return self.response_422(message=ex.normalized_messages())
         except DatabaseConnectionFailedError as ex:
