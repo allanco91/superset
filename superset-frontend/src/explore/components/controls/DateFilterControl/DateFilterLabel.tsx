@@ -33,12 +33,14 @@ import { getClientErrorObject } from 'src/utils/getClientErrorObject';
 import Button from 'src/components/Button';
 import ControlHeader from 'src/explore/components/ControlHeader';
 import Label from 'src/components/Label';
-import Popover from 'src/common/components/Popover';
+import Popover from 'src/components/Popover';
 import { Divider } from 'src/common/components';
 import Icon from 'src/components/Icon';
 import { Select } from 'src/components/Select';
 import { Tooltip } from 'src/common/components/Tooltip';
 import { DEFAULT_TIME_RANGE } from 'src/explore/constants';
+import { useDebouncedEffect } from 'src/explore/exploreUtils';
+import { SLOW_DEBOUNCE } from 'src/constants';
 
 import { SelectOptionType, FrameType } from './types';
 import {
@@ -220,17 +222,21 @@ export default function DateFilterLabel(props: DateFilterControlProps) {
     });
   }, [value]);
 
-  useEffect(() => {
-    fetchTimeRange(timeRangeValue, endpoints).then(({ value, error }) => {
-      if (error) {
-        setEvalResponse(error || '');
-        setValidTimeRange(false);
-      } else {
-        setEvalResponse(value || '');
-        setValidTimeRange(true);
-      }
-    });
-  }, [timeRangeValue]);
+  useDebouncedEffect(
+    () => {
+      fetchTimeRange(timeRangeValue, endpoints).then(({ value, error }) => {
+        if (error) {
+          setEvalResponse(error || '');
+          setValidTimeRange(false);
+        } else {
+          setEvalResponse(value || '');
+          setValidTimeRange(true);
+        }
+      });
+    },
+    SLOW_DEBOUNCE,
+    [timeRangeValue],
+  );
 
   function onSave() {
     onChange(timeRangeValue);

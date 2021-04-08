@@ -24,9 +24,8 @@ import { useSingleViewResource } from 'src/views/CRUD/hooks';
 import Icon from 'src/components/Icon';
 import Modal from 'src/common/components/Modal';
 import { Switch } from 'src/common/components/Switch';
-import { GraySelect as Select } from 'src/common/components/Select';
 import { Radio } from 'src/common/components/Radio';
-import { AsyncSelect } from 'src/components/Select';
+import { AsyncSelect, NativeGraySelect as Select } from 'src/components/Select';
 import withToasts from 'src/messageToasts/enhancers/withToasts';
 import Owner from 'src/types/Owner';
 import TextAreaControl from 'src/explore/components/controls/TextAreaControl';
@@ -418,7 +417,6 @@ const NotificationMethod: FunctionComponent<NotificationMethodProps> = ({
   const onMethodChange = (method: NotificationMethod) => {
     // Since we're swapping the method, reset the recipients
     setRecipientValue('');
-
     if (onUpdate) {
       const updatedSetting = {
         ...setting,
@@ -464,6 +462,7 @@ const NotificationMethod: FunctionComponent<NotificationMethodProps> = ({
         <StyledInputContainer>
           <div className="input-container">
             <Select
+              data-test="select-delivery-method"
               onChange={onMethodChange}
               placeholder="Select Delivery Method"
               defaultValue={method}
@@ -585,8 +584,9 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
     clearError();
     setIsHidden(true);
     onHide();
-    setCurrentAlert({ ...DEFAULT_ALERT });
     setNotificationSettings([]);
+    setCurrentAlert({ ...DEFAULT_ALERT });
+    setNotificationAddState('active');
   };
 
   const onSave = () => {
@@ -996,6 +996,9 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
       }));
 
       setNotificationSettings(settings);
+      setNotificationAddState(
+        settings.length === NOTIFICATION_METHODS.length ? 'hidden' : 'active',
+      );
       setContentType(resource.chart ? 'chart' : 'dashboard');
 
       const validatorConfig =
@@ -1123,7 +1126,7 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
               {t('Owners')}
               <span className="required">*</span>
             </div>
-            <div className="input-container">
+            <div data-test="owners-select" className="input-container">
               <AsyncSelect
                 name="owners"
                 isMulti
@@ -1395,6 +1398,7 @@ const AlertReportModal: FunctionComponent<AlertReportModalProps> = ({
               onRemove={removeNotificationSetting}
             />
             <NotificationMethodAdd
+              data-test="notification-add"
               status={notificationAddState}
               onClick={onNotificationAdd}
             />

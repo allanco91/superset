@@ -49,6 +49,10 @@ const StyledDatasourceModal = styled(Modal)`
   .modal-footer {
     flex: 0 1 auto;
   }
+
+  .ant-modal-body {
+    overflow: visible;
+  }
 `;
 
 interface DatasourceModalProps {
@@ -61,15 +65,17 @@ interface DatasourceModalProps {
 }
 
 function buildMetricExtraJsonObject(metric: Record<string, unknown>) {
-  if (metric?.certified_by || metric?.certification_details) {
-    return JSON.stringify({
-      certification: {
-        certified_by: metric?.certified_by ?? null,
-        details: metric?.certification_details ?? null,
-      },
-    });
-  }
-  return null;
+  const certification =
+    metric?.certified_by || metric?.certification_details
+      ? {
+          certified_by: metric?.certified_by,
+          details: metric?.certification_details,
+        }
+      : undefined;
+  return JSON.stringify({
+    certification,
+    warning_markdown: metric?.warning_markdown,
+  });
 }
 
 const DatasourceModal: FunctionComponent<DatasourceModalProps> = ({

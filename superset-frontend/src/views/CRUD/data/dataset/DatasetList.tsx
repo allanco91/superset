@@ -44,9 +44,10 @@ import withToasts from 'src/messageToasts/enhancers/withToasts';
 import { Tooltip } from 'src/common/components/Tooltip';
 import Icons from 'src/components/Icons';
 import FacePile from 'src/components/FacePile';
-import CertifiedIconWithTooltip from 'src/components/CertifiedIconWithTooltip';
+import CertifiedIcon from 'src/components/CertifiedIcon';
 import ImportModelsModal from 'src/components/ImportModal/index';
 import { isFeatureEnabled, FeatureFlag } from 'src/featureFlags';
+import WarningIconWithTooltip from 'src/components/WarningIconWithTooltip';
 import AddDatasetModal from './AddDatasetModal';
 
 const PAGE_SIZE = 25;
@@ -235,16 +236,21 @@ const DatasetList: FunctionComponent<DatasetListProps> = ({
           const titleLink = <a href={exploreURL}>{datasetTitle}</a>;
           try {
             const parsedExtra = JSON.parse(extra);
-            return parsedExtra?.certification ? (
+            return (
               <FlexRowContainer>
-                <CertifiedIconWithTooltip
-                  certifiedBy={parsedExtra.certification.certified_by}
-                  details={parsedExtra.certification.details}
-                />
+                {parsedExtra?.certification && (
+                  <CertifiedIcon
+                    certifiedBy={parsedExtra.certification.certified_by}
+                    details={parsedExtra.certification.details}
+                  />
+                )}
+                {parsedExtra?.warning_markdown && (
+                  <WarningIconWithTooltip
+                    warningMarkdown={parsedExtra.warning_markdown}
+                  />
+                )}
                 {titleLink}
               </FlexRowContainer>
-            ) : (
-              titleLink
             );
           } catch {
             return titleLink;

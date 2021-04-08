@@ -41,7 +41,6 @@ from superset.databases.commands.exceptions import (
     DatabaseImportError,
     DatabaseInvalidError,
     DatabaseNotFoundError,
-    DatabaseTestConnectionFailedError,
     DatabaseUpdateFailedError,
 )
 from superset.databases.commands.export import ExportDatabasesCommand
@@ -560,7 +559,6 @@ class DatabaseRestApi(BaseSupersetModelRestApi):
 
     @expose("/test_connection", methods=["POST"])
     @protect()
-    @safe
     @statsd_metrics
     @event_logger.log_this_with_context(
         action=lambda self, *args, **kwargs: f"{self.__class__.__name__}"
@@ -606,11 +604,8 @@ class DatabaseRestApi(BaseSupersetModelRestApi):
         # This validates custom Schema with custom validations
         except ValidationError as error:
             return self.response_400(message=error.messages)
-        try:
-            TestConnectionDatabaseCommand(g.user, item).run()
-            return self.response(200, message="OK")
-        except DatabaseTestConnectionFailedError as ex:
-            return self.response_422(message=str(ex))
+        TestConnectionDatabaseCommand(g.user, item).run()
+        return self.response(200, message="OK")
 
     @expose("/<int:pk>/related_objects/", methods=["GET"])
     @protect()
@@ -805,7 +800,7 @@ class DatabaseRestApi(BaseSupersetModelRestApi):
             logger.warning("Import database failed")
             return self.response_422(message=exc.normalized_messages())
         except DatabaseImportError as exc:
-            logger.exception("Import database failed")
+            logger.error("Import database failed")
             return self.response_500(message=str(exc))
 
     @expose("/<int:pk>/function_names/", methods=["GET"])

@@ -26,6 +26,7 @@ import prison
 import pytest
 import yaml
 
+from sqlalchemy.engine.url import make_url
 from sqlalchemy.sql import func
 
 from superset import db, security_manager
@@ -819,7 +820,21 @@ class TestDatabaseApi(SupersetTestCase):
         self.assertEqual(rv.headers["Content-Type"], "application/json; charset=utf-8")
         response = json.loads(rv.data.decode("utf-8"))
         expected_response = {
-            "message": "Could not load database driver: BaseEngineSpec",
+            "errors": [
+                {
+                    "message": "Could not load database driver: BaseEngineSpec",
+                    "error_type": "GENERIC_COMMAND_ERROR",
+                    "level": "warning",
+                    "extra": {
+                        "issue_codes": [
+                            {
+                                "code": 1010,
+                                "message": "Issue 1010 - Superset encountered an error while running a command.",
+                            }
+                        ]
+                    },
+                }
+            ]
         }
         self.assertEqual(response, expected_response)
 
@@ -834,7 +849,21 @@ class TestDatabaseApi(SupersetTestCase):
         self.assertEqual(rv.headers["Content-Type"], "application/json; charset=utf-8")
         response = json.loads(rv.data.decode("utf-8"))
         expected_response = {
-            "message": "Could not load database driver: MssqlEngineSpec",
+            "errors": [
+                {
+                    "message": "Could not load database driver: MssqlEngineSpec",
+                    "error_type": "GENERIC_COMMAND_ERROR",
+                    "level": "warning",
+                    "extra": {
+                        "issue_codes": [
+                            {
+                                "code": 1010,
+                                "message": "Issue 1010 - Superset encountered an error while running a command.",
+                            }
+                        ]
+                    },
+                }
+            ]
         }
         self.assertEqual(response, expected_response)
 
@@ -865,6 +894,140 @@ class TestDatabaseApi(SupersetTestCase):
         self.assertEqual(response, expected_response)
 
         app.config["PREVENT_UNSAFE_DB_CONNECTIONS"] = False
+
+    @mock.patch("superset.databases.commands.test_connection.is_hostname_valid",)
+    def test_test_connection_failed_invalid_hostname(self, mock_is_hostname_valid):
+        """
+        Database API: Test test connection failed due to invalid hostname
+        """
+        mock_is_hostname_valid.return_value = False
+
+        self.login("admin")
+        data = {
+            "sqlalchemy_uri": "postgres://username:password@invalidhostname:12345/db",
+            "database_name": "examples",
+            "impersonate_user": False,
+            "server_cert": None,
+        }
+        url = "api/v1/database/test_connection"
+        rv = self.post_assert_metric(url, data, "test_connection")
+
+        assert rv.status_code == 400
+        assert rv.headers["Content-Type"] == "application/json; charset=utf-8"
+        response = json.loads(rv.data.decode("utf-8"))
+        expected_response = {
+            "errors": [
+                {
+                    "message": 'Unable to resolve hostname "invalidhostname".',
+                    "error_type": "TEST_CONNECTION_INVALID_HOSTNAME_ERROR",
+                    "level": "error",
+                    "extra": {
+                        "hostname": "invalidhostname",
+                        "issue_codes": [
+                            {
+                                "code": 1007,
+                                "message": "Issue 1007 - The hostname provided can't be resolved.",
+                            }
+                        ],
+                    },
+                }
+            ]
+        }
+        assert response == expected_response
+
+    @mock.patch("superset.databases.commands.test_connection.is_hostname_valid")
+    @mock.patch("superset.databases.commands.test_connection.is_port_open")
+    @mock.patch("superset.databases.commands.test_connection.is_host_up")
+    def test_test_connection_failed_closed_port(
+        self, mock_is_host_up, mock_is_port_open, mock_is_hostname_valid
+    ):
+        """
+        Database API: Test test connection failed due to closed port.
+        """
+        mock_is_hostname_valid.return_value = True
+        mock_is_port_open.return_value = False
+        mock_is_host_up.return_value = True
+
+        self.login("admin")
+        data = {
+            "sqlalchemy_uri": "postgres://username:password@localhost:12345/db",
+            "database_name": "examples",
+            "impersonate_user": False,
+            "server_cert": None,
+        }
+        url = "api/v1/database/test_connection"
+        rv = self.post_assert_metric(url, data, "test_connection")
+
+        assert rv.status_code == 400
+        assert rv.headers["Content-Type"] == "application/json; charset=utf-8"
+        response = json.loads(rv.data.decode("utf-8"))
+        expected_response = {
+            "errors": [
+                {
+                    "message": "The host localhost is up, but the port 12345 is closed.",
+                    "error_type": "TEST_CONNECTION_PORT_CLOSED_ERROR",
+                    "level": "error",
+                    "extra": {
+                        "hostname": "localhost",
+                        "port": 12345,
+                        "issue_codes": [
+                            {
+                                "code": 1008,
+                                "message": "Issue 1008 - The port is closed.",
+                            }
+                        ],
+                    },
+                }
+            ]
+        }
+        assert response == expected_response
+
+    @mock.patch("superset.databases.commands.test_connection.is_hostname_valid")
+    @mock.patch("superset.databases.commands.test_connection.is_port_open")
+    @mock.patch("superset.databases.commands.test_connection.is_host_up")
+    def test_test_connection_failed_host_down(
+        self, mock_is_host_up, mock_is_port_open, mock_is_hostname_valid
+    ):
+        """
+        Database API: Test test connection failed due to host being down.
+        """
+        mock_is_hostname_valid.return_value = True
+        mock_is_port_open.return_value = False
+        mock_is_host_up.return_value = False
+
+        self.login("admin")
+        data = {
+            "sqlalchemy_uri": "postgres://username:password@localhost:12345/db",
+            "database_name": "examples",
+            "impersonate_user": False,
+            "server_cert": None,
+        }
+        url = "api/v1/database/test_connection"
+        rv = self.post_assert_metric(url, data, "test_connection")
+
+        assert rv.status_code == 400
+        assert rv.headers["Content-Type"] == "application/json; charset=utf-8"
+        response = json.loads(rv.data.decode("utf-8"))
+        expected_response = {
+            "errors": [
+                {
+                    "message": "The host localhost might be down, ond can't be reached on port 12345.",
+                    "error_type": "TEST_CONNECTION_HOST_DOWN_ERROR",
+                    "level": "error",
+                    "extra": {
+                        "hostname": "localhost",
+                        "port": 12345,
+                        "issue_codes": [
+                            {
+                                "code": 1009,
+                                "message": "Issue 1009 - The host might be down, and can't be reached on the provided port.",
+                            }
+                        ],
+                    },
+                }
+            ]
+        }
+        assert response == expected_response
 
     @pytest.mark.usefixtures(
         "load_unicode_dashboard_with_position",

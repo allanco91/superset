@@ -39,6 +39,8 @@ class SupersetErrorType(str, Enum):
     GENERIC_DB_ENGINE_ERROR = "GENERIC_DB_ENGINE_ERROR"
     COLUMN_DOES_NOT_EXIST_ERROR = "COLUMN_DOES_NOT_EXIST_ERROR"
     TABLE_DOES_NOT_EXIST_ERROR = "TABLE_DOES_NOT_EXIST_ERROR"
+    TEST_CONNECTION_PORT_CLOSED_ERROR = "TEST_CONNECTION_PORT_CLOSED_ERROR"
+    TEST_CONNECTION_HOST_DOWN_ERROR = "TEST_CONNECTION_HOST_DOWN_ERROR"
 
     # Viz errors
     VIZ_GET_DF_ERROR = "VIZ_GET_DF_ERROR"
@@ -56,6 +58,11 @@ class SupersetErrorType(str, Enum):
 
     # Sql Lab errors
     MISSING_TEMPLATE_PARAMS_ERROR = "MISSING_TEMPLATE_PARAMS_ERROR"
+    TEST_CONNECTION_INVALID_HOSTNAME_ERROR = "TEST_CONNECTION_INVALID_HOSTNAME_ERROR"
+
+    # Generic errors
+    GENERIC_COMMAND_ERROR = "GENERIC_COMMAND_ERROR"
+    GENERIC_BACKEND_ERROR = "GENERIC_BACKEND_ERROR"
 
 
 ERROR_TYPES_TO_ISSUE_CODES_MAPPING = {
@@ -112,6 +119,38 @@ ERROR_TYPES_TO_ISSUE_CODES_MAPPING = {
                 "Issue 1006 - One or more parameters specified in the query are "
                 "missing."
             ),
+        },
+    ],
+    SupersetErrorType.TEST_CONNECTION_INVALID_HOSTNAME_ERROR: [
+        {
+            "code": 1007,
+            "message": _("Issue 1007 - The hostname provided can't be resolved."),
+        },
+    ],
+    SupersetErrorType.TEST_CONNECTION_PORT_CLOSED_ERROR: [
+        {"code": 1008, "message": _("Issue 1008 - The port is closed."),},
+    ],
+    SupersetErrorType.TEST_CONNECTION_HOST_DOWN_ERROR: [
+        {
+            "code": 1009,
+            "message": _(
+                "Issue 1009 - The host might be down, and can't be reached on the "
+                "provided port."
+            ),
+        },
+    ],
+    SupersetErrorType.GENERIC_COMMAND_ERROR: [
+        {
+            "code": 1010,
+            "message": _(
+                "Issue 1010 - Superset encountered an error while running a command."
+            ),
+        },
+    ],
+    SupersetErrorType.GENERIC_BACKEND_ERROR: [
+        {
+            "code": 1011,
+            "message": _("Issue 1011 - Superset encountered an unexpected error."),
         },
     ],
 }

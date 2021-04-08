@@ -19,8 +19,12 @@
 import { useEffect } from 'react';
 import { FormInstance } from 'antd/lib/form';
 import { getChartDataRequest } from 'src/chart/chartAction';
+import { ChartDataResponseResult, t } from '@superset-ui/core';
+import { FeatureFlag, isFeatureEnabled } from 'src/featureFlags';
+import { waitForAsyncData } from 'src/middleware/asyncEvent';
+import { ClientErrorObject } from 'src/utils/getClientErrorObject';
 import { NativeFiltersForm } from '../types';
-import { setFilterFieldValues, useForceUpdate } from './utils';
+import { setNativeFilterFieldValues, useForceUpdate } from './utils';
 import { Filter } from '../../types';
 import { getFormData } from '../../utils';
 
@@ -44,7 +48,7 @@ export const useBackendFormUpdate = (
     // No need to check data set change because it cascading update column
     // So check that column exists is enough
     if (hasColumn && !formFilter?.column) {
-      setFilterFieldValues(form, filterId, {
+      setNativeFilterFieldValues(form, filterId, {
         defaultValueQueriesData: [],
         defaultValue: resolvedDefaultValue,
       });
@@ -60,6 +64,11 @@ export const useBackendFormUpdate = (
       defaultValue: formFilter?.defaultValue,
       ...formFilter,
     });
+    setNativeFilterFieldValues(form, filterId, {
+      defaultValueQueriesData: null,
+      defaultValue: resolvedDefaultValue,
+    });
+    forceUpdate();
     getChartDataRequest({
       formData,
       force: false,
@@ -73,11 +82,31 @@ export const useBackendFormUpdate = (
       ) {
         resolvedDefaultValue = filterToEdit?.defaultValue;
       }
-      setFilterFieldValues(form, filterId, {
-        defaultValueQueriesData: response.result,
-        defaultValue: resolvedDefaultValue,
-      });
-      forceUpdate();
+      if (isFeatureEnabled(FeatureFlag.GLOBAL_ASYNC_QUERIES)) {
+        // deal with getChartDataRequest transforming the response data
+        const result = 'result' in response ? response.result[0] : response;
+        waitForAsyncData(result)
+          .then((asyncResult: ChartDataResponseResult[]) => {
+            setNativeFilterFieldValues(form, filterId, {
+              defaultValueQueriesData: asyncResult,
+              defaultValue: resolvedDefaultValue,
+            });
+            forceUpdate();
+          })
+          .catch((error: ClientErrorObject) => {
+            // TODO: show error once this logic is moved into new NativeFilter
+            //  component
+            console.error(
+              error.message || error.error || t('Check configuration'),
+            );
+          });
+      } else {
+        setNativeFilterFieldValues(form, filterId, {
+          defaultValueQueriesData: response.result,
+          defaultValue: resolvedDefaultValue,
+        });
+        forceUpdate();
+      }
     });
   }, [
     formFilter?.filterType,
