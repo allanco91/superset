@@ -97,6 +97,7 @@ except ImportError:
 
 FEATURE_FLAGS = {
     "DASHBOARD_NATIVE_FILTERS": True,
+    "DASHBOARD_CROSS_FILTERS": True,
     "VERSIONED_EXPORT": True
 }
 
