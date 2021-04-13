@@ -105,7 +105,6 @@ class SecurityRestApi(BaseApi):
                 "database_access",
                 database.perm)
 
-            sm.sync_role_definitions()
             system_role = sm.add_role(request_body['role'])
             sm.add_permission_role(system_role, database_permission)
 

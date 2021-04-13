@@ -38,7 +38,7 @@ import { Switch } from 'src/common/components';
 
 import ActivityTable from './ActivityTable';
 import ChartTable from './ChartTable';
-import SavedQueries from './SavedQueries';
+//import SavedQueries from './SavedQueries';
 import DashboardTable from './DashboardTable';
 
 interface WelcomeProps {
@@ -232,7 +232,7 @@ function Welcome({ user, addDangerToast }: WelcomeProps) {
             />
           )}
         </Collapse.Panel>
-        <Collapse.Panel header={t('Saved queries')} key="3">
+        {/* <Collapse.Panel header={t('Saved queries')} key="3">
           {!queryData ? (
             <Loading position="inline" />
           ) : (
@@ -243,7 +243,7 @@ function Welcome({ user, addDangerToast }: WelcomeProps) {
               featureFlag={isFeatureEnabled(FeatureFlag.THUMBNAILS)}
             />
           )}
-        </Collapse.Panel>
+        </Collapse.Panel> */}
         <Collapse.Panel header={t('Charts')} key="4">
           {!chartData ? (
             <Loading position="inline" />
