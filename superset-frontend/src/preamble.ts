@@ -72,19 +72,19 @@ export const theme = merge(
         light1: "#AE62E4",
         light2: "#C996ED",
         light3: "#D2A8F0",
-        light4: "#DBB9F3",
+        light4: "#E8E8E8",
         light5: "#E4CBF6"
       },
       secondary: {
-        base: "#B185FF",
-        dark1: "#4B00CC",
-        dark2: "#3C00A3",
-        dark3: "#2D007A",
-        light1: "#BE99FF",
-        light2: "#C29EFF",
-        light3: "#D8C2FF",
-        light4: "#E5D6FF",
-        light5: "#F2EBFF"
+        base: "#858585",
+        dark1: "#141414",
+        dark2: "#292929",
+        dark3: "#3D3D3D",
+        light1: "#999999",
+        light2: "#ADADAD",
+        light3: "#C2C2C2",
+        light4: "#D6D6D6",
+        light5: "#EBEBEB"
       },
       error: {
         base: "#FF0050",

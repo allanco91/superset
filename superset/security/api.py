@@ -98,6 +98,26 @@ class SecurityRestApi(BaseApi):
 
             sm = self.appbuilder.sm
 
+            # Remove view permissions menu Data and SQL Lab
+            menu_data_permission = sm.find_permission_view_menu(
+              "menu_access", "Data")
+            menu_databases_permission = sm.find_permission_view_menu(
+              "menu_access", "Databases")
+            menu_datasets_permission = sm.find_permission_view_menu(
+              "menu_access", "Datasets")
+            menu_excel_permission = sm.find_permission_view_menu(
+              "menu_access", "Upload Excel")
+            menu_sqleditor_permission = sm.find_permission_view_menu(
+              "menu_access", "SQL Editor")
+
+            gamma_role = sm.find_role("Gamma")
+            sm.del_permission_role(gamma_role, menu_data_permission)
+            sm.del_permission_role(gamma_role, menu_databases_permission)
+            sm.del_permission_role(gamma_role, menu_datasets_permission)
+            sm.del_permission_role(gamma_role, menu_excel_permission)
+            sm.del_permission_role(gamma_role, menu_sqleditor_permission)
+
+            # Add system role
             database = utils.get_or_create_db(
                 request_body['database'],
                 request_body['sqlalchemy_uri'])
