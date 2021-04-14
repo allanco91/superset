@@ -18,9 +18,8 @@
  */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { NavItem } from 'react-bootstrap';
+import { NavItem, NavDropdown } from 'react-bootstrap';
 import { Menu } from 'src/common/components';
-import NavDropdown from '../NavDropdown';
 
 export interface MenuObjectChildProps {
   label: string;
@@ -64,6 +63,7 @@ export default function MenuObject({
   return (
     <NavDropdown
       id={`menu-dropdown-${label}`}
+      className="menu-dropdown"
       title={label}
       onMouseEnter={() => setDropdownOpen(true)}
       onMouseLeave={() => setDropdownOpen(false)}

@@ -19,7 +19,7 @@
 import React, { useState } from 'react';
 import { t, styled } from '@superset-ui/core';
 import { Menu } from 'src/common/components';
-import NavDropdown from 'src/components/NavDropdown';
+import { NavDropdown } from 'react-bootstrap';
 
 export const dropdownItems = [
   {
@@ -44,6 +44,7 @@ export default function NewMenu() {
     <NavDropdown
       id="new-dropdown"
       data-test="new-dropdown"
+      className="menu-dropdown"
       title={<StyledI className="fa fa-plus" />}
       onMouseEnter={() => setDropdownOpen(true)}
       onMouseLeave={() => setDropdownOpen(false)}

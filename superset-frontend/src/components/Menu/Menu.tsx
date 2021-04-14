@@ -18,8 +18,7 @@
  */
 import React, { useState } from 'react';
 import { t, styled } from '@superset-ui/core';
-import { Nav, Navbar, NavItem, Image, OverlayTrigger, Popover, Button } from 'react-bootstrap';
-import NavDropdown from 'src/components/NavDropdown';
+import { Nav, Navbar, NavItem, Image, OverlayTrigger, Popover, Button, NavDropdown } from 'react-bootstrap';
 import { Menu as DropdownMenu } from 'src/common/components';
 import { Link } from 'react-router-dom';
 import MenuObject, {
@@ -27,7 +26,6 @@ import MenuObject, {
   MenuObjectChildProps,
 } from './MenuObject';
 import LanguagePicker, { Languages } from './LanguagePicker';
-import NewMenu from './NewMenu';
 
 interface BrandProps {
   path: string;
@@ -64,114 +62,7 @@ export interface MenuProps {
   isFrontendRoute?: (path?: string) => boolean;
 }
 
-const StyledHeader = styled.header`
-  &:nth-last-of-type(2) nav {
-    margin-bottom: 2px;
-  }
-
-  .caret {
-    display: none;
-  }
-
-  .navbar-inverse {
-    border: none;
-  }
-
-  .version-info {
-    padding: ${({ theme }) => theme.gridUnit * 1.5}px
-      ${({ theme }) => theme.gridUnit * 4}px
-      ${({ theme }) => theme.gridUnit * 1.5}px
-      ${({ theme }) => theme.gridUnit * 7}px;
-    color: ${({ theme }) => theme.colors.grayscale.light4};
-    font-size: ${({ theme }) => theme.typography.sizes.xs}px;
-
-    div {
-      white-space: nowrap;
-    }
-  }
-
-  .navbar-brand {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .nav > li > a {
-    padding: ${({ theme }) => theme.gridUnit * 4}px;
-  }
-  .dropdown-header {
-    text-transform: uppercase;
-    padding-left: 12px;
-  }
-
-  .navbar-inverse .navbar-nav ul {
-    background-color: ${({ theme }) => theme.colors.primary.base};
-  }
-
-  .navbar-inverse .navbar-nav li {
-    background-color: ${({ theme }) => theme.colors.primary.base};
-    transition: background-color ${({ theme }) => theme.transitionTiming}s;
-  
-    div {
-      background-color: ${({ theme }) => theme.colors.primary.dark1};
-      color: ${({ theme }) => theme.colors.grayscale.light5};
-    }
-  }
-
-  .navbar-inverse .navbar-nav li a {
-    display: block;
-    padding-left: ${({ theme }) => theme.gridUnit * 4}px;
-    color: ${({ theme }) => theme.colors.grayscale.light5};
-    border-bottom: none;
-    transition: background-color ${({ theme }) => theme.transitionTiming}s;
-    &:after {
-      content: '';
-      position: absolute;
-      bottom: -3px;
-      left: 50%;
-      width: 0;
-      height: 3px;
-      opacity: 0;
-      transform: translateX(-50%);
-      transition: all ${({ theme }) => theme.transitionTiming}s;
-      background-color: ${({ theme }) => theme.colors.primary.base};
-    }
-    &:focus {
-      border-bottom: none;
-      background-color: transparent;
-      /* background-color: ${({ theme }) => theme.colors.primary.light5}; */
-    }
-    &:hover {
-      color: ${({ theme }) => theme.colors.grayscale.dark1};
-      background-color: ${({ theme }) => theme.colors.primary.light5};
-      border-bottom: none;
-      margin: 0;
-      &:after {
-        opacity: 1;
-        width: 100%;
-      }
-    }
-  }
-
-  .navbar-right {
-    display: flex;
-    align-items: center;
-  }
-
-  .ant-menu {
-    .ant-menu-item-group-title {
-      padding-bottom: ${({ theme }) => theme.gridUnit}px;
-    }
-    .ant-menu-item {
-      padding: 0;
-      margin-bottom: ${({ theme }) => theme.gridUnit * 2}px;
-    }
-    .about-section {
-      margin: ${({ theme }) => theme.gridUnit}px 0
-        ${({ theme }) => theme.gridUnit * 2}px;
-    }
-  }
-`;
+const StyledHeader = styled.header``;
 
 export function Menu({
   data: { menu, brand, navbar_right: navbarRight, settings },
@@ -202,7 +93,7 @@ export function Menu({
   );
 
   return (
-    <StyledHeader className="top" id="main-menu">
+    <StyledHeader className="top menu-navbar" id="main-menu">
       <Navbar inverse fluid staticTop role="navigation" className="primary">
         <Navbar.Header>
           <Navbar.Brand>
@@ -232,7 +123,6 @@ export function Menu({
           })}
         </Nav>
         <Nav className="navbar-right">
-          {!navbarRight.user_is_anonymous && <NewMenu />}
           <OverlayTrigger
             trigger="click"
             placement="bottom"
@@ -240,6 +130,7 @@ export function Menu({
           >
             <Image
               circle
+              className="margin-m"
               src={navbarRight.atlas_profile_picture}
               height={35}
             />
@@ -247,6 +138,7 @@ export function Menu({
           {navbarRight.atlas_profile_picture?.includes("ba073007-1bcc-4a0a-61a9-08d54e24a5ec") &&
             <NavDropdown
               id="settings-dropdown"
+              className="menu-dropdown"
               title={t('Settings')}
               onMouseEnter={() => setDropdownOpen(true)}
               onMouseLeave={() => setDropdownOpen(false)}
